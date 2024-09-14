@@ -1,0 +1,100 @@
+.cardContainer {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    background-color: #f5f8fa;
+  }
+  
+  .card {
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 900px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: auto;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .categoryIcon {
+    width: 80px;
+    height: 80px;
+    font-size: 80px;
+    background-color: #ec407a; /* Background for the emoji circle */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+  
+  .insightText {
+    font-size: 18px;
+    color: #ec407a;
+    font-weight: bold;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    color: #14171a;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: left;
+  }
+  
+  .description {
+    font-size: 16px;
+    color: #14171a;
+    line-height: 1.5;
+    margin: 15px 0;
+    text-align: left;
+  }
+  
+  .tagsContainer {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .tagContent {
+    padding: 10px 20px;
+    background-color: #f8d7da;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #14171a;
+  }
+  
+  .tagSEO {
+    padding: 10px 20px;
+    background-color: #d4edda;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #14171a;
+  }
+  
+  .bookmarkButton {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .bookmarkIcon {
+    width: 40px;
+    height: 40px;
+    color: #657786;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .bookmarkIcon:hover {
+    color: #14171a;
+  }
+  

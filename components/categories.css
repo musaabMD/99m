@@ -1,0 +1,33 @@
+.categories-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 5fr));
+  gap: 20px;
+  padding: 100px;
+  background-color: #121212;
+}
+
+.category-tile {
+  border-radius: 8px;
+  padding: 10px;
+  color: #ffffff;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  text-align: center; /* Ensure text is centered */
+  background-color: #333; /* Default background */
+  overflow: hidden;
+}
+
+.category-name {
+  font-size: 40px;
+  font-weight: bold;
+  z-index: 2; /* Makes sure the text is above other content */
+}
+
+.category-description {
+  font-size: 26px;
+  margin-top: 10px;
+  color: #ffffff; /* Add a lighter color for description */
+}
