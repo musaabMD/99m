@@ -1,7 +1,7 @@
 import PageHero from '../../components/PageHero';
 import Header from '@/components/Header';
 import { Suspense } from 'react';
-
+import IncomoSearch from '@/components/Inclist';
 export default function CompanyPage() {
   return (
     <>
@@ -17,6 +17,7 @@ export default function CompanyPage() {
         backgroundColor="bg-blue-100"
       />
       {/* Rest of the company page content */}
+      <IncomoSearch/>
       </Suspense>
 
       </>
