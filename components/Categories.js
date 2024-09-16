@@ -1,75 +1,77 @@
 "use client";
-
 import Link from 'next/link';
 import React, { useEffect, useState } from "react";
-import { createClient } from "../libs/supabase/client";
+import { createClient } from "@/libs/supabase/client";
 import "./categories.css";
 import { Suspense } from 'react';
 
-// List of colors to be used sequentially for categories
 const categoryColors = [
-  "#026C56",
-  "#354E71",
-  "#E20F00",
-  "#5E7784",
-  "#FF00C7",
-  "#BA2DB7",
+  "#026C56", "#354E71", "#E20F00", "#5E7784", "#FF00C7", "#BA2DB7",
 ];
 
 const Categories = ({ searchQuery }) => {
   const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const supabase = createClient();
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data, error } = await supabase.from("categories").select("*");
-      if (error) {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const { data, error } = await supabase
+          .from("category")
+          .select("id, category_name, category_emoji, slug");
+        if (error) throw error;
+        console.log("Fetched categories:", data);
+        setCategories(data || []);
+      } catch (error) {
         console.error("Error fetching categories:", error);
-      } else {
-        setCategories(data);
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchCategories();
   }, []);
 
-  // Filter categories based on search query
   const filteredCategories = categories.filter(category =>
     category.category_name.toLowerCase().includes((searchQuery || "").toLowerCase())
   );
 
+  if (isLoading) return <div>Loading categories...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (categories.length === 0) return <div>No categories found.</div>;
+
   return (
-
-    <>
-    <Suspense>
-   
-    <div className="categories-container">
-      {filteredCategories.map((category, index) => (
-        <Link href={`/category/${category.category_name}`} key={index}>
-          <div
-            className="category-tile"
-            style={{
-              backgroundColor: categoryColors[index % categoryColors.length], // Assign color from the list
-            }}
-          >
-        
-
-            {/* Display category image and name */}
-            <div className="category-name text-3xl">
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="categories-container">
+        {filteredCategories.map((category, index) => {
+          const href = `/category/${encodeURIComponent(category.slug || category.category_name)}`;
+          console.log("Generated href:", href);
+          return (
+            <Link href={href} key={category.id}>
+              <div
+                className="category-tile "
+                style={{
+                  backgroundColor: categoryColors[index % categoryColors.length],
+                }}
+              >
+                <div className="category-name text-5xl ">
+                  {category.category_emoji || '🔹'} 
+                  <br />
+                  <br />
+                  {category.category_name}
+                </div>
               
-              
-            {category.category_image}  {category.category_name}
-            </div>
-            <div className="category-description">
-              {category.category_description || "No description available"}
-            </div>
-          </div>
-        </Link>
-      ))}
-    </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </Suspense>
-
-    
-</>
   );
 };
 

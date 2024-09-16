@@ -1,3 +1,4 @@
+import Founders from '@/components/Founder';
 import PageHero from '../../components/PageHero';
 import Header from '@/components/Header';
 import { Suspense } from 'react';
@@ -18,7 +19,7 @@ const FounderPage = () => {
       />
       {/* Rest of the founder page content */}
     </Suspense>
-
+<Founders/>
     </>
 
   );

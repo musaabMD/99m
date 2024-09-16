@@ -25,6 +25,10 @@ const links = [
     href: "/founder",
     label: "Founders",
     icon: Users,
+  }, {
+    href: "/category",
+    label: "Categories",
+    icon: Users,
   },
   {
     href: "/upgrade",

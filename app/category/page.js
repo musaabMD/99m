@@ -1,6 +1,7 @@
+import Categories from '@/components/Categories';
 import PageHero from '../../components/PageHero';
 import Header from '@/components/Header';
-import { Suspense } from 'react';
+import { Suspense } from 'react'; 
 const CategoryPage = () => {
     return (
      
@@ -15,7 +16,7 @@ const CategoryPage = () => {
           backgroundColor="bg-gray-100"
         />
         {/* Rest of the category page content */}
-     
+     <Categories/>
       </Suspense>
       </>
     );
