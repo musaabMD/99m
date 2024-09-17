@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { createClient } from '@/libs/supabase/client'; // Adjust the path to your Supabase client setup
-
+import { Suspense } from 'react';
 const getLogoUrl = (apiName) => {
   return `https://img.logo.dev/${apiName}?token=pk_f8BWa9CoSCOyj527NcZ2LA`;
 };
@@ -47,6 +47,11 @@ export default function Logos() {
   const [companies] = useState(manualCompanies); // Keep only manual companies
 
   return (
+    <>
+
+    <Suspense>
+
+        
     <div className="bg-white py-24 lg:py-16">
       <div className="mx-auto max-w-2xl px-6 lg:px-4">
         <div className="-mx-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 overflow-hidden sm:mx-0 sm:rounded-3xl">
@@ -64,5 +69,7 @@ export default function Logos() {
         </div>
       </div>
     </div>
+    </Suspense>
+</>
   );
 }
