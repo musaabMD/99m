@@ -16,23 +16,24 @@ const links = [
     label: "Companies",
     icon: Building2,
   },
+  // {
+  //   href: "/market",
+  //   label: "Markets",
+  //   icon: BarChart3,
+  // },  
+  // {
+  //   href: "/founder",
+  //   label: "Founders",
+  //   icon: Users,
+  // }, 
   {
-    href: "/market",
-    label: "Markets",
-    icon: BarChart3,
-  },  
-  {
-    href: "/founder",
-    label: "Founders",
-    icon: Users,
-  }, {
     href: "/category",
     label: "Categories",
     icon: Users,
   },
   {
     href: "/upgrade",
-    label: "Upgrade",
+    label: "Plus",
     icon: CreditCard,
   },
 ];

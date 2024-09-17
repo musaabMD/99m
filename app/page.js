@@ -1,14 +1,11 @@
-import Link from "next/link";
-import ButtonSignin from "@/components/ButtonSignin";
-import IncomoSearch from "@/components/Inclist";
-import Categories from "@/components/Categories";
-import Founders from "@/components/Founder";
-import Post from "@/components/Post";
-import Post2 from "@/components/post2";
+"use client"; // Add this line at the top
+
 import Header from "@/components/Header";
 import { Suspense } from 'react';
-import BetterIcon from "@/components/BetterIcon";
-import PageHero from "@/components/PageHero";
+
+import HomeHero from "@/components/Homehero";
+import Post from "@/components/Post";
+import Logos from "@/components/Homelogos";
 export default function Page() {
   return (
     <>
@@ -17,11 +14,8 @@ export default function Page() {
 
   
     <Header/>
-    <PageHero/>
-    <BetterIcon/>
-    <Post/>
-    <Post2/>
-
+  <HomeHero/>
+  <Post/>
 </Suspense>
     </>
   );

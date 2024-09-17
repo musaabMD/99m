@@ -1,15 +1,14 @@
-"use client";
+"use client"
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/libs/supabase/client';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
-import { Suspense } from 'react';
+import Image from 'next/image';
 
-const IncomoSearch = () => {
+export default function CompanyList() {
   const [companies, setCompanies] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredCompanies, setFilteredCompanies] = useState([]);
+  const [sortBy, setSortBy] = useState('default');
   const [supabase, setSupabase] = useState(null);
 
   useEffect(() => {
@@ -22,10 +21,6 @@ const IncomoSearch = () => {
     }
   }, [supabase]);
 
-  useEffect(() => {
-    filterCompanies();
-  }, [searchTerm, companies]);
-
   const fetchCompanies = async () => {
     const { data, error } = await supabase
       .from('inc')
@@ -34,72 +29,91 @@ const IncomoSearch = () => {
       console.error('Error fetching companies:', error);
     } else {
       setCompanies(data);
-      setFilteredCompanies(data);
     }
   };
 
-  const filterCompanies = () => {
-    const filtered = companies.filter(company =>
-      company.inc_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCompanies(filtered);
-  };
+  const filteredCompanies = companies.filter(company =>
+    (company.inc_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (company.inc_category?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+  );
+
+  const sortedCompanies = [...filteredCompanies].sort((a, b) => {
+    if (sortBy === 'name') return (a.inc_name || '').localeCompare(b.inc_name || '');
+    if (sortBy === 'arr') return (b.inc_arr || 0) - (a.inc_arr || 0);
+    return 0;
+  });
 
   const getLogoUrl = (apiName) => {
     return `https://img.logo.dev/${apiName}?token=pk_f8BWa9CoSCOyj527NcZ2LA`;
   };
 
   const calculateAge = (foundedDate) => {
+    if (!foundedDate) return 'N/A';
     const founded = new Date(foundedDate);
     const now = new Date();
     return now.getFullYear() - founded.getFullYear();
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div className="incomo-search bg-base-100 min-h-screen p-4 md:p-8">
-        <div className="search-container mb-8">
-          <div className="relative max-w-md mx-auto">
-            <input
-              type="text"
-              placeholder="Search companies..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-3 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-          </div>
-        </div>
-        <div className="companies-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {filteredCompanies.length > 0 ? (
-            filteredCompanies.map(company => (
-              <Link key={company.id} href={`/company/${company.inc_api_name}`} passHref>
-                <div className="company-card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 border border-gray-200">
-                  <div className="relative h-64 flex flex-col items-center justify-center">
-                    <img
-                      src={getLogoUrl(company.inc_api_name)}
-                      alt={company.inc_name}
-                      className="w-40 h-40 object-contain"
-                    />
-                    <h3 className="text-3xl font-semibold mt-4 text-center">{company.inc_name}</h3>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-3xl bg-blue-100 text-blue-800 px-3 py-1 rounded-full">{company.inc_category} SaaS</span>
-                      <span className="text-3xl bg-green-100 text-green-800 px-3 py-1 rounded-full">${company.inc_arr}33M</span>
-                    </div>
-                    <div className="text-3xl text-gray-600">Age: {calculateAge(company.founded)} years</div>
-                  </div>
-                </div>
-              </Link>
-            ))
-          ) : (
-            <p className="col-span-full text-center text-gray-500 text-3xl">No companies found.</p>
-          )}
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Companies</h1>
+        <div className="flex items-center">
+          <span className="mr-2">Sort by</span>
+          <select 
+            value={sortBy} 
+            onChange={(e) => setSortBy(e.target.value)}
+            className="border rounded p-2"
+          >
+            <option value="default">Default</option>
+            <option value="name">Name</option>
+            <option value="arr">ARR</option>
+          </select>
         </div>
       </div>
-    </Suspense>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <p className="mb-4">Showing {sortedCompanies.length} of {companies.length} companies</p>
+      {sortedCompanies.map(company => (
+        <div key={company.id} className="mb-4 p-4 border rounded shadow bg-base-200 border-2 border-black">
+          <div className="flex items-start">
+            <Link href={`/company/${company.inc_api_name}`}>
+              <Image
+                src={getLogoUrl(company.inc_api_name)}
+                alt={`${company.inc_name || 'Company'} logo`}
+                width={80}
+                height={80}
+                className="rounded-full mr-4"
+              />
+            </Link>
+            <div>
+              <Link href={`/company/${company.inc_api_name}`}>
+                <h2 className="text-2xl font-semibold text-blue-700">{company.inc_name || 'Unnamed Company'}</h2>
+              </Link>
+              <p className="text-1xl text-gray-500">{company.inc_category ? `${company.inc_category} SaaS` : 'Category not specified'}</p>
+              <p className="my-2 text-1xl">ARR: ${company.inc_arr || 'N/A'}M</p>
+              <p>Age: {calculateAge(company.founded)} years</p>
+              <div className="flex flex-wrap gap-2 mt-2 text-1xl">
+                {company.inc_category && (
+                  <Link href={`/category/${encodeURIComponent(company.inc_category)}`}>
+                    <span className="px-2 py-1 bg-gray-200 rounded-full text-sm cursor-pointer hover:bg-gray-300">{company.inc_category}</span>
+                  </Link>
+                )}
+                {company.inc_arr && (
+                  <span className="px-2 py-1 bg-gray-200 rounded-full text-sm">ARR: ${company.inc_arr}M</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
-};
-
-export default IncomoSearch;
+}

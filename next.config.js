@@ -6,7 +6,9 @@ const nextConfig = {
       "lh3.googleusercontent.com",
       "pbs.twimg.com",
       "images.unsplash.com",
-      "logos-world.net",
+      "images.indiehackers.com",
+      "avatars.githubusercontent.com",
+      "img.logo.dev"
     ],
   },
 };

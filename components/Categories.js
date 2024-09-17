@@ -6,7 +6,7 @@ import "./categories.css";
 import { Suspense } from 'react';
 
 const categoryColors = [
-  "#026C56", "#354E71", "#E20F00", "#5E7784", "#FF00C7", "#BA2DB7",
+  "#026C56",
 ];
 
 const Categories = ({ searchQuery }) => {
@@ -64,7 +64,12 @@ const Categories = ({ searchQuery }) => {
                   <br />
                   <br />
                   {category.category_name}
+                  <br />
                 </div>
+                <br />
+
+                <h1>                  33 Tips
+                </h1>
               
               </div>
             </Link>

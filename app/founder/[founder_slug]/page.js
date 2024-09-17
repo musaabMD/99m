@@ -65,6 +65,7 @@ const FounderPage = () => {
 
     <div>
       <h1>{founderDetails.founder_name}</h1>
+      <h1> learn how {founderDetails.founder_name} built $54B company  </h1>
       <p>Description: {founderDetails.founder_dec}</p>
       <p>Year of Birth: {founderDetails.founder_birth_year}</p>
       <img src={founderDetails.founder_image} alt={`${founderDetails.founder_name}'s Image`} />

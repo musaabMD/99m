@@ -1,88 +1,119 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Bookmark } from "lucide-react";
-import styles from "./Post.module.css";
-import { createClient } from "../libs/supabase/client";
-import { Suspense } from 'react';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/libs/supabase/client';
 
-const Post = () => {
+export default function Post() {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [supabase, setSupabase] = useState(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    const fetchPosts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("posts")
-          .select(`
-            id,
-            post_text,
-            post_image,
-            post_inc,
-            categories (id, category_image, category_name),
-            founders (founder_name)
-          `)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        if (error) {
-          console.error("Error fetching posts:", error);
-        } else {
-          setPosts(data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
+    console.log("Initializing Supabase client");
+    const client = createClient();
+    setSupabase(client);
+    console.log("Supabase client initialized:", client);
   }, []);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  useEffect(() => {
+    if (supabase) {
+      console.log("Supabase client available, fetching posts");
+      fetchPosts();
+    }
+  }, [supabase]);
+
+  const fetchPosts = async () => {
+    console.log("Starting fetchPosts function");
+    setIsLoading(true);
+    setError(null);
+    try {
+      console.log("Executing Supabase query");
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          post_inc_id,
+          post_cate_id,
+          post_text,
+          post_img,
+          inc:post_inc_id(inc_name, inc_api_name),
+          category:post_cate_id(category_name, category_emoji)
+        `);
+
+      console.log("Query executed. Data:", data, "Error:", error);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        console.log("Posts fetched successfully:", data);
+        setPosts(data);
+      } else {
+        console.log("No posts found");
+        setPosts([]);
+      }
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      setError('Failed to fetch posts. Please try again later.');
+    } finally {
+      setIsLoading(false);
+      console.log("fetchPosts function completed");
+    }
+  };
+
+  const getLogoUrl = (apiName) => {
+    return `https://img.logo.dev/${apiName}?token=pk_f8BWa9CoSCOyj527NcZ2LA`;
+  };
+
+  console.log("Render state:", { isLoading, error, postsCount: posts.length });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (posts.length === 0) return <div>No posts found</div>;
 
   return (
-    <>
-        <Suspense>
-
-  
-    <div>
-      {posts.map((post) => (
-        <div key={post.id} className={styles.cardContainer}>
-          <div className={styles.card}>
-            <div className={styles.header}>
-              <div className={styles.categoryIconContainer}>
-                <span className={styles.categoryIcon}>{post.categories?.category_image}</span>
+    <div className="flex justify-center items-center min-h-screen bg-base-200 p-4">
+      <div className="max-w-5xl w-full">
+        {posts.map(post => {
+          console.log("Rendering post:", post);
+          return (
+            <div key={post.id} className="border rounded-lg shadow-md mb-6 p-6 bg-white border-2 border-gray-300">
+              <div className="mb-4">
+                <div className="flex items-center mb-2">
+                  <Image
+                    alt="logo"
+                    height={90}
+                    width={90}
+                    src={getLogoUrl(post.inc?.inc_api_name)}
+                    className="rounded-full"
+                  />
+                  <div className="ml-3">
+                    <p className="text-2xl text-blue-900 font-semibold">{post.inc?.inc_name || 'Unknown Company'}</p>
+                    <p className="text-xl text-gray-500">{post.inc?.inc_api_name || 'N/A'}</p>
+                  </div>
+                </div>
+                <p className="mb-4 text-lg">{post.post_text}</p>
+                {post.post_img && (
+                  <div className="relative w-full h-0" style={{ paddingBottom: '33.33%' }}>
+                    <Image
+                      alt={`Thumbnail for ${post.inc?.inc_name || 'post'}`}
+                      layout="fill"
+                      objectFit="cover"
+                      src={post.post_img}
+                      className="rounded-lg mb-4"
+                    />
+                  </div>
+                )}
               </div>
-              <span className={styles.insightText}>#{post.categories?.category_name.toUpperCase()} INSIGHT</span>
+              {post.category && (
+                <span className="inline-flex items-center rounded-md bg-red-600 px-2 py-1 text-1xl font-medium text-white mb-2">
+                  {post.category.category_emoji} {post.category.category_name}
+                </span>
+              )}
             </div>
-            <h1 className={styles.title}>Negativity Bias</h1> {/* You can update this title dynamically if needed */}
-            {post.post_image && (
-              <div className={styles.imageContainer}>
-                <img src={post.post_image} alt="Post image" className={styles.postImage} />
-              </div>
-            )}
-            <p className={styles.description}>{post.post_text}</p>
-            <div className={styles.tagsContainer}>
-              {/* First tag for category_name */}
-              <span className={styles.tagContent}>{post.categories?.category_name}</span>
-              {/* Second tag for founder_name */}
-              <span className={styles.tagSEO}>{post.founders?.founder_name}</span>
-            </div>
-            <div className={styles.bookmarkButton}>
-              <Bookmark className={styles.bookmarkIcon} />
-            </div>
-          </div>
-        </div>
-      ))}
+          );
+        })}
+      </div>
     </div>
-    </Suspense>
-
-</>
   );
-};
-
-export default Post;
+}
