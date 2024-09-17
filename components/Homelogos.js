@@ -2,7 +2,6 @@
 
 import React, { Suspense, useState } from 'react';
 import { createClient } from '@/libs/supabase/client'; // Adjust the path to your Supabase client setup
-import { Suspense } from 'react';
 const getLogoUrl = (apiName) => {
   return `https://img.logo.dev/${apiName}?token=pk_f8BWa9CoSCOyj527NcZ2LA`;
 };
