@@ -1,13 +1,12 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/libs/supabase/client';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function CompanyList() {
+export default function CompanyList({ searchQuery }) { // Accept searchQuery as a prop
   const [companies, setCompanies] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('default');
   const [supabase, setSupabase] = useState(null);
 
@@ -33,8 +32,8 @@ export default function CompanyList() {
   };
 
   const filteredCompanies = companies.filter(company =>
-    (company.inc_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-    (company.inc_category?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+    (company.inc_name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (company.inc_category?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
 
   const sortedCompanies = [...filteredCompanies].sort((a, b) => {
@@ -71,15 +70,6 @@ export default function CompanyList() {
           </select>
         </div>
       </div>
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-      </div>
       <p className="mb-4">Showing {sortedCompanies.length} of {companies.length} companies</p>
       {sortedCompanies.map(company => (
         <div key={company.id} className="mb-4 p-4 border rounded shadow bg-base-200 border-2 border-black">
@@ -100,16 +90,6 @@ export default function CompanyList() {
               <p className="text-1xl text-gray-500">{company.inc_category ? `${company.inc_category} SaaS` : 'Category not specified'}</p>
               <p className="my-2 text-1xl">ARR: ${company.inc_arr || 'N/A'}M</p>
               <p>Age: {calculateAge(company.founded)} years</p>
-              <div className="flex flex-wrap gap-2 mt-2 text-1xl">
-                {company.inc_category && (
-                  <Link href={`/category/${encodeURIComponent(company.inc_category)}`}>
-                    <span className="px-2 py-1 bg-gray-200 rounded-full text-sm cursor-pointer hover:bg-gray-300">{company.inc_category}</span>
-                  </Link>
-                )}
-                {company.inc_arr && (
-                  <span className="px-2 py-1 bg-gray-200 rounded-full text-sm">ARR: ${company.inc_arr}M</span>
-                )}
-              </div>
             </div>
           </div>
         </div>

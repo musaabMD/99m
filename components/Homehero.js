@@ -15,7 +15,7 @@ const HomeHero = () => {
           role="alert"
         >
           <span className="text-xs bg-primary-600 rounded-full font-bold text-blue-400  px-4 py-1.5 mr-3"></span>
-          <span className="text-3xl font-medium ">Flowbite is out! See whats new</span>
+          <span className="text-3xl font-medium ">Get lifetime access now </span>
           <svg
             className="ml-2 w-5 h-5"
             fill="currentColor"
@@ -33,7 +33,8 @@ const HomeHero = () => {
         Learn from the Legends Who Built It!
         </h1>
         <p className="mb-8  font-normal text-gray-500 lg:text-2xl sm:px-16 xl:px-48 dark:text-gray-700">
-        </p>
+        Get the inside scoop from the people who built successful startups. We've distilled thousands of interviews into bite-sized, practical tips you can use right now. No fluff, just real strategies from founders who've been in your shoes—and made it work
+    </p>
         <Logos/>
 
       </div>
