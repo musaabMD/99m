@@ -1,7 +1,12 @@
 import React from 'react';
 import Logos from './Homelogos';
+import { Suspense } from 'react';
 const HomeHero = () => {
   return (
+    <>
+    <Suspense>
+
+  
     <section className="bg-white dark:bg-gray-900">
       <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
         <a
@@ -28,12 +33,13 @@ const HomeHero = () => {
         Learn from the Legends Who Built It!
         </h1>
         <p className="mb-8  font-normal text-gray-500 lg:text-2xl sm:px-16 xl:px-48 dark:text-gray-700">
-        Discover the secrets to startup success with bite-sized insights from real founders. Curated from 1,000+ interviews and videos, these practical tips will guide you to build, grow, and thrive—straight from those who've done it
         </p>
         <Logos/>
 
       </div>
     </section>
+    </Suspense>
+    </>
   );
 };
 
