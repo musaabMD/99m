@@ -15,7 +15,7 @@ const HomeHero = () => {
           role="alert"
         >
           <span className="text-xs bg-primary-600 rounded-full font-bold text-blue-400  px-4 py-1.5 mr-3"></span>
-          <span className="text-3xl font-medium ">Flowbite is out! See what's new</span>
+          <span className="text-3xl font-medium ">Flowbite is out! See whats new</span>
           <svg
             className="ml-2 w-5 h-5"
             fill="currentColor"
