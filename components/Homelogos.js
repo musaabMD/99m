@@ -49,13 +49,12 @@ export default function Logos() {
     <>
 
     <Suspense>
-
         
-    <div className="bg-white py-24 lg:py-16">
+    <div className="py-24 lg:py-16 bg-transparent dark:bg-transparent"> {/* Use transparent background */}
       <div className="mx-auto max-w-2xl px-6 lg:px-4">
         <div className="-mx-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 overflow-hidden sm:mx-0 sm:rounded-3xl">
           {companies.map((company, index) => (
-            <div key={index} className="bg-white p-2"> {/* Changed background to white and adjusted padding */}
+            <div key={index} className="p-2"> {/* Removed bg-white for transparency */}
               <img
                 alt={company.inc_api_name}
                 src={getLogoUrl(company.inc_api_name)}
