@@ -64,8 +64,9 @@ const CategoryPage = () => {
         backgroundColor="bg-blue-100" // You can adjust this color as needed
       />
      
-      <Post/>
-   
+   <br />
+   <br />
+   <br />
 
     </Suspense>
   );

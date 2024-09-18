@@ -15,7 +15,7 @@ const HomeHero = () => {
           role="alert"
         >
           <span className="text-xs bg-primary-600 rounded-full font-bold text-blue-400  px-4 py-1.5 mr-3"></span>
-          <span className="text-3xl font-medium ">Get lifetime access now </span>
+          <span className="text-sm font-medium ">Get lifetime access now </span>
           <svg
             className="ml-2 w-5 h-5"
             fill="currentColor"
