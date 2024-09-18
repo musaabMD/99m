@@ -71,7 +71,7 @@ const Header = () => {
                   width={32}
                   height={32}
                 />
-                <span className="font-extrabold text-3xl text-white">{config.appName}</span>
+                <span className="font-extrabold text-1xl text-white">{config.appName}</span>
               </Link>
             </div>
             <div className="flex lg:hidden">

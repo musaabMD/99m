@@ -5,7 +5,7 @@ import { createClient } from '@/libs/supabase/client';
 import { Suspense } from 'react';
 import PageHero from '../../../components/PageHero'; // Adjust the path according to where you place PageHero
 import Header from '@/components/Header';
-
+import Post from '@/components/Post';
 const CategoryPage = () => {
   const params = useParams();
   const [categoryDetails, setCategoryDetails] = useState(null);
@@ -63,11 +63,10 @@ const CategoryPage = () => {
         searchPlaceholder="Search within category..."
         backgroundColor="bg-blue-100" // You can adjust this color as needed
       />
-      <div className="px-4 py-8">
-        <h1 className="text-3xl font-bold mb-4">{categoryDetails.category_name}</h1>
-        <p>Emoji: {categoryDetails.category_emoji || 'No emoji set.'}</p>
-        <p>Slug: {categoryDetails.slug || 'No slug available.'}</p>
-      </div>
+     
+      <Post/>
+   
+
     </Suspense>
   );
 };

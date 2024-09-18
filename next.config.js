@@ -8,7 +8,8 @@ const nextConfig = {
       "images.unsplash.com",
       "images.indiehackers.com",
       "avatars.githubusercontent.com",
-      "img.logo.dev"
+      "img.logo.dev",
+      "ik.imagekit.io"
     ],
   },
 };

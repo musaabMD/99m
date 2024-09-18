@@ -89,24 +89,29 @@ export default function Post() {
                   />
                   <div className="ml-3">
                     <p className="text-2xl text-blue-900 font-semibold">{post.inc?.inc_name || 'Unknown Company'}</p>
-                    <p className="text-xl text-gray-500">{post.inc?.inc_api_name || 'N/A'}</p>
+                    {/* <p className="text-xl text-gray-500">{post.inc?.inc_api_name || 'N/A'}</p> */}
+                                        <p className="text-xl text-gray-500"> $33M/M , 23 years ago</p>
+
                   </div>
                 </div>
                 <p className="mb-4 text-lg">{post.post_text}</p>
                 {post.post_img && (
-                  <div className="relative w-full h-0" style={{ paddingBottom: '33.33%' }}>
-                    <Image
-                      alt={`Thumbnail for ${post.inc?.inc_name || 'post'}`}
-                      layout="fill"
-                      objectFit="cover"
-                      src={post.post_img}
-                      className="rounded-lg mb-4"
-                    />
-                  </div>
-                )}
+  <div className="relative w-full" style={{ height: '600px' }}>
+    <Image
+      alt={`Thumbnail for ${post.inc?.inc_name || 'post'}`}
+      src={post.post_img}
+      fill
+      objectFit="contain"
+      className="rounded-lg mb-4"
+    />
+  </div>
+)}
+
+
+
               </div>
               {post.category && (
-                <span className="inline-flex items-center rounded-md bg-red-600 px-2 py-1 text-1xl font-medium text-white mb-2">
+                <span className="inline-flex items-center rounded-md bg-red-400 px-2 py-1 text-2xl font-medium text-white mb-2">
                   {post.category.category_emoji} {post.category.category_name}
                 </span>
               )}
