@@ -7,6 +7,7 @@ export default function CompanyList({ searchQuery }) {
   const [companies, setCompanies] = useState([]);
   const [sortBy, setSortBy] = useState('default');
   const [supabase, setSupabase] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setSupabase(createClient());
@@ -19,13 +20,14 @@ export default function CompanyList({ searchQuery }) {
   }, [supabase]);
 
   const fetchCompanies = async () => {
-    const { data, error } = await supabase
-      .from('inc')
-      .select('id, inc_name, inc_api_name, inc_category, inc_arr, founded');
-    if (error) {
-      console.error('Error fetching companies:', error);
-    } else {
+    try {
+      const { data, error } = await supabase
+        .from('inc')
+        .select('id, inc_name, inc_api_name, inc_category, inc_arr, founded, employees, founders');
+      if (error) throw error;
       setCompanies(data);
+    } catch (error) {
+      setError('Error fetching companies: ' + error.message);
     }
   };
 
@@ -44,12 +46,16 @@ export default function CompanyList({ searchQuery }) {
     return `https://img.logo.dev/${apiName}?token=pk_f8BWa9CoSCOyj527NcZ2LA`;
   };
 
-  const calculateAge = (foundedDate) => {
-    if (!foundedDate) return 'N/A';
-    const founded = new Date(foundedDate);
-    const now = new Date();
-    return now.getFullYear() - founded.getFullYear();
-  };
+  if (error) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -69,40 +75,58 @@ export default function CompanyList({ searchQuery }) {
         </div>
       </div>
       <p className="mb-4">Showing {sortedCompanies.length} of {companies.length} companies</p>
-      {sortedCompanies.map(company => (
-        <div key={company.id} className="flex max-w-full mx-auto border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 mb-4">
-          <div className="p-2 sm:p-3 md:p-4 lg:p-6 flex-grow flex items-center space-x-2 sm:space-x-3 md:space-x-4">
-            <Image
-              src={getLogoUrl(company.inc_api_name)}
-              alt={`${company.inc_name || 'Company'} logo`}
-              width={40}
-              height={40}
-              className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 flex-shrink-0 rounded-full"
-            />
-            <div className="min-w-0 flex-grow">
-              <Link href={`/company/${company.inc_api_name}`}>
-                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold truncate">{company.inc_name || 'Unnamed Company'}</h2>
-              </Link>
-              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 truncate">
-                {company.inc_category ? `${company.inc_category} SaaS` : 'Category not specified'}
-              </p>
-              <span className="inline-block bg-gray-200 rounded-full px-2 py-0.5 text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-gray-700 truncate max-w-full mt-1 sm:mt-2">
-                {company.inc_category?.toUpperCase() || 'CATEGORY NOT SPECIFIED'}
-              </span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {sortedCompanies.map(company => (
+          <div key={company.id} className="max-w-md mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                  <Image
+                    src={getLogoUrl(company.inc_api_name)}
+                    alt={`${company.inc_name || 'Company'} logo`}
+                    width={64}
+                    height={64}
+                    className="rounded-full"
+                  />
+                </div>
+                <div>
+                  <Link href={`/company/${company.inc_api_name}`}>
+                    <h2 className="text-2xl font-bold text-gray-800">{company.inc_name || 'Unnamed Company'}</h2>
+                  </Link>
+                  <p className="text-sm text-gray-600">
+                    {company.inc_category ? `${company.inc_category} SaaS` : 'Category not specified'}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                  {company.inc_category?.toUpperCase() || 'CATEGORY NOT SPECIFIED'}
+                </span>
+              </div>
+            </div>
+            <div className="bg-gray-500 px-4 py-5 sm:px-6">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div className="text-center">
+                  <div className="text-xl font-semibold text-white">${company.inc_arr || 'N/A'}M</div>
+                  <div className="text-sm text-blue-200">ARR</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-semibold text-white">{company.founded ? new Date().getFullYear() - new Date(company.founded).getFullYear() : 'N/A'}</div>
+                  <div className="text-sm text-blue-200">AGE</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-semibold text-white">{company.employees || 'N/A'}</div>
+                  <div className="text-sm text-blue-200">EMPLOYEES</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-semibold text-white">{company.founders || 'N/A'}</div>
+                  <div className="text-sm text-blue-200">FOUNDERS</div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="bg-gray-100 p-2 sm:p-3 md:p-4 lg:p-6 flex items-center space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-6">
-            <div className="text-center">
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold">$23M/M</p>
-              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600">ARR</p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold"> 23 Years</p> 
-              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600">AGE</p>
-            </div>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
