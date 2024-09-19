@@ -1,11 +1,9 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/libs/supabase/client';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function CompanyList({ searchQuery }) { // Accept searchQuery as a prop
+export default function CompanyList({ searchQuery }) {
   const [companies, setCompanies] = useState([]);
   const [sortBy, setSortBy] = useState('default');
   const [supabase, setSupabase] = useState(null);
@@ -59,8 +57,8 @@ export default function CompanyList({ searchQuery }) { // Accept searchQuery as 
         <h1 className="text-2xl font-bold">Companies</h1>
         <div className="flex items-center">
           <span className="mr-2">Sort by</span>
-          <select 
-            value={sortBy} 
+          <select
+            value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             className="border rounded p-2"
           >
@@ -72,24 +70,35 @@ export default function CompanyList({ searchQuery }) { // Accept searchQuery as 
       </div>
       <p className="mb-4">Showing {sortedCompanies.length} of {companies.length} companies</p>
       {sortedCompanies.map(company => (
-        <div key={company.id} className="mb-4 p-4 border rounded shadow bg-base-200 border-2 border-black">
-          <div className="flex items-start">
-            <Link href={`/company/${company.inc_api_name}`}>
-              <Image
-                src={getLogoUrl(company.inc_api_name)}
-                alt={`${company.inc_name || 'Company'} logo`}
-                width={80}
-                height={80}
-                className="rounded-full mr-4"
-              />
-            </Link>
-            <div>
+        <div key={company.id} className="flex max-w-full mx-auto border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 mb-4">
+          <div className="p-2 sm:p-3 md:p-4 lg:p-6 flex-grow flex items-center space-x-2 sm:space-x-3 md:space-x-4">
+            <Image
+              src={getLogoUrl(company.inc_api_name)}
+              alt={`${company.inc_name || 'Company'} logo`}
+              width={40}
+              height={40}
+              className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 flex-shrink-0 rounded-full"
+            />
+            <div className="min-w-0 flex-grow">
               <Link href={`/company/${company.inc_api_name}`}>
-                <h2 className="text-2xl font-semibold text-blue-700">{company.inc_name || 'Unnamed Company'}</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold truncate">{company.inc_name || 'Unnamed Company'}</h2>
               </Link>
-              <p className="text-1xl text-gray-500">{company.inc_category ? `${company.inc_category} SaaS` : 'Category not specified'}</p>
-              <p className="my-2 text-1xl">ARR: ${company.inc_arr || 'N/A'}M</p>
-              <p>Age: {calculateAge(company.founded)} years</p>
+              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600 truncate">
+                {company.inc_category ? `${company.inc_category} SaaS` : 'Category not specified'}
+              </p>
+              <span className="inline-block bg-gray-200 rounded-full px-2 py-0.5 text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-gray-700 truncate max-w-full mt-1 sm:mt-2">
+                {company.inc_category?.toUpperCase() || 'CATEGORY NOT SPECIFIED'}
+              </span>
+            </div>
+          </div>
+          <div className="bg-gray-100 p-2 sm:p-3 md:p-4 lg:p-6 flex items-center space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-6">
+            <div className="text-center">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold">$23M/M</p>
+              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600">ARR</p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold"> 23 Years</p> 
+              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-600">AGE</p>
             </div>
           </div>
         </div>

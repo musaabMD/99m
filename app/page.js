@@ -6,6 +6,8 @@ import { Suspense } from 'react';
 import HomeHero from "@/components/Homehero";
 import Post from "@/components/Post";
 import Logos from "@/components/Homelogos";
+import LogoSlider from "@/components/LogoSlider";
+import Design1 from "@/components/design1";
 export default function Page() {
   return (
     <>
@@ -15,6 +17,8 @@ export default function Page() {
   
     <Header/>
   <HomeHero/>
+  <LogoSlider/>
+  <Design1/>
   <Post/>
 </Suspense>
     </>

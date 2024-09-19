@@ -85,26 +85,23 @@ export default function Post() {
                   />
                   <div className="ml-2">
                     <p className="text-2xl text-blue-900 font-semibold">{post.inc?.inc_name || 'Unknown Company'}</p>
-                    <p className="text-2xl text-gray-500">$33M/M, 23 years ago</p>
-                    
+                    <p className="text-2xl text-gray-500">Retool started as Venmo for the U.K.</p>
                   </div>
                 </div>
-                <p className="mb-2 text-3xl">{post.post_text}</p>
+                <p className="mb-2 text-3xl" dangerouslySetInnerHTML={{ __html: post.post_text }} />
                 {post.post_img && (
-  <div className="relative w-full">
-    <Image
-      alt={`Thumbnail for ${post.inc?.inc_name || 'post'}`}
-      src={post.post_img}
-      layout="responsive" // This ensures the image resizes properly
-      width={800} // Define a width to control the aspect ratio
-      height={450} // Define a height to control the aspect ratio
-      objectFit="contain" // Ensures the whole image is visible without cropping
-      className="rounded-lg"
-    />
-  </div>
-)}
-
-
+                  <div className="relative w-full">
+                    <Image
+                      alt={`Thumbnail for ${post.inc?.inc_name || 'post'}`}
+                      src={post.post_img}
+                      layout="responsive"
+                      width={800}
+                      height={450}
+                      objectFit="contain"
+                      className="rounded-lg"
+                    />
+                  </div>
+                )}
               </div>
               {post.category && (
                 <span className="inline-flex items-center rounded-md bg-red-400 px-2 py-1 text-2xl font-medium text-white">

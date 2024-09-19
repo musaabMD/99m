@@ -34,9 +34,10 @@ const HomeHero = () => {
         </h1>
         <p className="mb-8  font-normal text-gray-500 lg:text-2xl sm:px-16 xl:px-48 dark:text-gray-700">
         Get the inside scoop from the people who built successful startups. We have distilled thousands of interviews into bite-sized, practical tips you can use right now. No fluff, just real strategies from founders who have been in your shoes—and made it work
+     
     </p>
-        <Logos/>
-
+     
+    <Logos/>
       </div>
     </section>
     </Suspense>
