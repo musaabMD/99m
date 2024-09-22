@@ -8,6 +8,7 @@ export default function CompanyList({ searchQuery }) {
   const [sortBy, setSortBy] = useState('default');
   const [supabase, setSupabase] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setSupabase(createClient());
@@ -21,13 +22,16 @@ export default function CompanyList({ searchQuery }) {
 
   const fetchCompanies = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('inc')
-        .select('id, inc_name, inc_api_name, inc_category, inc_arr, founded, employees, founders');
+        .select('id, inc_name, inc_api_name, inc_category, inc_arr');
       if (error) throw error;
       setCompanies(data);
     } catch (error) {
       setError('Error fetching companies: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,6 +49,10 @@ export default function CompanyList({ searchQuery }) {
   const getLogoUrl = (apiName) => {
     return `https://img.logo.dev/${apiName}?token=pk_f8BWa9CoSCOyj527NcZ2LA`;
   };
+
+  if (loading) {
+    return <div className="container mx-auto p-4">Loading...</div>;
+  }
 
   if (error) {
     return (
@@ -111,15 +119,15 @@ export default function CompanyList({ searchQuery }) {
                   <div className="text-sm text-blue-200">ARR</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-semibold text-white">{company.founded ? new Date().getFullYear() - new Date(company.founded).getFullYear() : 'N/A'}</div>
+                  <div className="text-xl font-semibold text-white">N/A</div>
                   <div className="text-sm text-blue-200">AGE</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-semibold text-white">{company.employees || 'N/A'}</div>
+                  <div className="text-xl font-semibold text-white">N/A</div>
                   <div className="text-sm text-blue-200">EMPLOYEES</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-semibold text-white">{company.founders || 'N/A'}</div>
+                  <div className="text-xl font-semibold text-white">N/A</div>
                   <div className="text-sm text-blue-200">FOUNDERS</div>
                 </div>
               </div>
