@@ -17,6 +17,7 @@ const PageHero = ({ title, description, searchPlaceholder, backgroundColor, onSe
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className={`flex flex-col items-center justify-center min-h-[30vh] ${backgroundColor} text-center px-4 py-8`}>
+        {/* Render the title with the emoji included (already handled by the parent component) */}
         <h1 className="text-4xl md:text-5xl font-bold mb-4">{title}</h1>
         <p className="text-lg md:text-xl mb-8 max-w-2xl">{description}</p>
         {!isUpgradePage && (

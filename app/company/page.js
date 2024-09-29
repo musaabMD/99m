@@ -1,17 +1,43 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PageHero from '@/components/PageHero';
 import Header from '@/components/Header';
-import { Suspense } from 'react';
-import CompanyList from '../../components/Inclist'; // Using the updated CompanyList
+import CompanyList from '../../components/Inclist';
+import { createClient } from '@/libs/supabase/client';
 
 export default function CompanyPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleSearch = (query) => {
     setSearchQuery(query);
   };
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      setLoading(true);
+      const supabase = createClient();
+      try {
+        let { data, error } = await supabase
+          .from('inc')
+          .select('inc_name, inc_category, inc_founded_year, inc_age, inc_description');
+        if (error) throw error;
+        setCompanies(data);
+      } catch (error) {
+        console.error('Error fetching companies:', error);
+        setError("Failed to fetch companies");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCompanies();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <>
@@ -23,9 +49,7 @@ export default function CompanyPage() {
         backgroundColor="bg-blue-100"
         onSearch={handleSearch}
       />
-      <Suspense fallback={<div>Loading...</div>}>
-        <CompanyList searchQuery={searchQuery} /> {/* Passing the search query to CompanyList */}
-      </Suspense>
+      <CompanyList companies={companies} searchQuery={searchQuery} />
     </>
   );
 }

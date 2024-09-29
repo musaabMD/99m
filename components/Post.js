@@ -1,117 +1,104 @@
-"use client";
+'use client';
+
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/libs/supabase/client';
 
-export default function Post() {
-  const [posts, setPosts] = useState([]);
+export default function Post({ post }) {
+  const [supabase, setSupabase] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [supabase, setSupabase] = useState(null);
+  const [incDetails, setIncDetails] = useState(null);
 
+  // Initialize Supabase client
   useEffect(() => {
-    console.log("Initializing Supabase client");
-    const client = createClient();
-    setSupabase(client);
-    console.log("Supabase client initialized:", client);
-  }, []);
-
-  useEffect(() => {
-    if (supabase) {
-      console.log("Supabase client available, fetching posts");
-      fetchPosts();
+    if (!supabase) {
+      const client = createClient();
+      setSupabase(client);
     }
   }, [supabase]);
 
-  const fetchPosts = async () => {
-    console.log("Starting fetchPosts function");
+  // Fetch post details including company (inc) details
+  useEffect(() => {
+    if (!post) {
+      setIsLoading(false);
+      return;
+    }
+
+    if (supabase && post.post_inc_id) {
+      fetchIncDetails(post.post_inc_id);
+    } else if (supabase) {
+      setIsLoading(false);
+    }
+  }, [supabase, post]);
+
+  // Fetch Inc details by Inc ID from the post
+  const fetchIncDetails = async (incId) => {
     setIsLoading(true);
     setError(null);
+
     try {
-      console.log("Executing Supabase query");
-      const { data, error } = await supabase
-        .from('posts')
-        .select(`
-          id,
-          post_inc_id,
-          post_cate_id,
-          post_text,
-          post_img,
-          inc:post_inc_id(inc_name, inc_api_name),
-          category:post_cate_id(category_name, category_emoji)
-        `);
-      console.log("Query executed. Data:", data, "Error:", error);
+      const { data, error } = await supabase.from('inc').select('*').eq('id', incId).single();
       if (error) throw error;
-      if (data && data.length > 0) {
-        console.log("Posts fetched successfully:", data);
-        setPosts(data);
-      } else {
-        console.log("No posts found");
-        setPosts([]);
-      }
+      setIncDetails(data);
     } catch (err) {
-      console.error('Error fetching posts:', err);
-      setError('Failed to fetch posts. Please try again later.');
+      setError('Failed to fetch inc details. Please try again later.');
     } finally {
       setIsLoading(false);
-      console.log("fetchPosts function completed");
     }
   };
 
+  // Generate the URL for the logo image
   const getLogoUrl = (apiName) => {
-    return `https://img.logo.dev/${apiName}?token=pk_f8BWa9CoSCOyj527NcZ2LA`;
+    return apiName ? `https://img.logo.dev/${encodeURIComponent(apiName)}?token=pk_f8BWa9CoSCOyj527NcZ2LA` : '/default-logo.png';
   };
 
-  console.log("Render state:", { isLoading, error, postsCount: posts.length });
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading post details...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (posts.length === 0) return <div>No posts found</div>;
+  if (!post) return <div>No post data available</div>;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-200 p-0 sm:p-4">
-      <div className="w-full max-w-5xl">
-        {posts.map(post => {
-          console.log("Rendering post:", post);
-          return (
-            <div key={post.id} className="border-b border-gray-200 p-4 bg-white">
-              <div className="mb-2">
-                <div className="flex items-center mb-2">
-                  <Image
-                    alt="logo"
-                    height={48}
-                    width={48}
-                    src={getLogoUrl(post.inc?.inc_api_name)}
-                    className="rounded-full"
-                  />
-                  <div className="ml-2">
-                    <p className="text-2xl text-blue-900 font-semibold">{post.inc?.inc_name || 'Unknown Company'}</p>
-                    <p className="text-2xl text-gray-500">Retool started as Venmo for the U.K.</p>
-                  </div>
-                </div>
-                <p className="mb-2 text-3xl" dangerouslySetInnerHTML={{ __html: post.post_text }} />
-                {post.post_img && (
-                  <div className="relative w-full">
-                    <Image
-                      alt={`Thumbnail for ${post.inc?.inc_name || 'post'}`}
-                      src={post.post_img}
-                      layout="responsive"
-                      width={800}
-                      height={450}
-                      objectFit="contain"
-                      className="rounded-lg"
-                    />
-                  </div>
-                )}
-              </div>
-              {post.category && (
-                <span className="inline-flex items-center rounded-md bg-red-400 px-2 py-1 text-2xl font-medium text-white">
-                  {post.category.category_emoji} {post.category.category_name}
-                </span>
-              )}
-            </div>
-          );
-        })}
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 p-8 border-t border-b border-gray-200 relative">
+      {/* Add vertical lines on the left and right */}
+      <div className="absolute top-0 bottom-0 left-0 w-1 bg-gray-200"></div>
+      <div className="absolute top-0 bottom-0 right-0 w-1 bg-gray-200"></div>
+
+      <div className="mb-2">
+        <div className="flex items-center mb-2">
+          {incDetails?.inc_api_name && (
+            <Image
+              alt={`${incDetails.inc_name || 'Company'} logo`}
+              height={48}
+              width={48}
+              src={getLogoUrl(incDetails.inc_api_name)}
+              className="rounded-full"
+              unoptimized
+            />
+          )}
+          <div className="ml-2">
+            <p className="text-2xl text-blue-900 font-semibold">{incDetails?.inc_name || 'Unknown Company'}</p>
+            {incDetails && <p className="text-2xl text-gray-500">{incDetails?.inc_name || 'Unknown Company'} {incDetails.inc_description}</p>}
+          </div>
+        </div>
+        <p className="mb-2 text-3xl" dangerouslySetInnerHTML={{ __html: post.post_text }} />
+        {post.post_img && (
+          <div className="relative w-full">
+            <Image
+              alt={`Thumbnail for ${incDetails?.inc_name || 'post'}`}
+              src={post.post_img}
+              width={800}
+              height={450}
+              style={{ objectFit: 'contain' }}
+              className="rounded-lg"
+            />
+          </div>
+        )}
       </div>
+      {/* {post.post_category && (
+        <span className="inline-flex items-center rounded-md bg-red-400 px-2 py-1 text-2xl font-medium text-white">
+          {post.post_category}
+        </span>
+      )} */}
     </div>
   );
 }

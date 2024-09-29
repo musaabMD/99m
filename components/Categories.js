@@ -81,7 +81,6 @@
 // };
 
 // export default Categories;
-
 "use client";
 
 import Link from 'next/link';
@@ -102,23 +101,39 @@ const Categories = ({ searchQuery }) => {
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesWithPostCount = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const { data, error } = await supabase
-          .from("category")
-          .select("id, category_name, category_emoji, slug");
-        if (error) throw error;
-        setCategories(data || []);
+        // First fetch the categories
+        const { data: categoriesData, error: categoryError } = await supabase
+          .from('category')
+          .select('id, category_name, category_emoji, slug');
+
+        if (categoryError) throw categoryError;
+
+        // Fetch the count of posts for each category
+        const { data: postCounts, error: postCountError } = await supabase
+          .from('posts')
+          .select('post_cate_id, count:id', { count: 'exact' });
+
+        if (postCountError) throw postCountError;
+
+        // Combine the category data with the post count
+        const categoriesWithPostCount = categoriesData.map((category) => {
+          const postCount = postCounts.filter(post => post.post_cate_id === category.id).length;
+          return { ...category, post_count: postCount };
+        });
+
+        setCategories(categoriesWithPostCount || []);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching categories or post counts:", error);
         setError(error.message);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchCategories();
+    fetchCategoriesWithPostCount();
   }, []);
 
   const filteredCategories = categories.filter(category =>
@@ -149,7 +164,8 @@ const Categories = ({ searchQuery }) => {
                   {category.category_name}
                 </div>
                 <br />
-                <h1>33 Tips</h1>
+                {/* Displaying post count dynamically */}
+                <h1>{category.post_count} Posts</h1>
               </div>
             </Link>
           );

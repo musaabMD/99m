@@ -11,11 +11,11 @@ import { Building2, BarChart3, Users, CreditCard } from 'lucide-react';
 import { Suspense } from 'react';
 
 const links = [
-  {
-    href: "/company",
-    label: "Companies",
-    icon: Building2,
-  },
+  // {
+  //   href: "/company",
+  //   label: "Companies",
+  //   icon: Building2,
+  // },
   // {
   //   href: "/market",
   //   label: "Markets",

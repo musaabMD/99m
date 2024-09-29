@@ -1,75 +1,88 @@
-"use client";
-import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { createClient } from '@/libs/supabase/client';
-import { Suspense } from 'react';
-import PageHero from '../../../components/PageHero'; // Adjust the path according to where you place PageHero
-import Header from '@/components/Header';
+// app/category/[slug]/page.js
+import { createClient } from '@/libs/supabase/server';
 import Post from '@/components/Post';
-const CategoryPage = () => {
-  const params = useParams();
-  const [categoryDetails, setCategoryDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+import PageHero from '@/components/PageHero';
+import Header from '@/components/Header';
 
-  useEffect(() => {
-    const fetchCategoryDetails = async () => {
-      const supabase = createClient();
-      const slug = decodeURIComponent(params.slug);
-      console.log("Decoded slug:", slug);
+export default async function CategoryPage({ params }) {
+  const supabase = createClient(); // No need to pass req/res; Supabase handles it server-side in the App Router
+  const slug = params.slug;
 
-      if (!slug) {
-        setError("No slug provided");
-        setLoading(false);
-        return;
+  let categoryDetails = null;
+  let categoryEmoji = '';
+  let posts = [];
+
+  try {
+    // Fetch category details based on the slug
+    const { data: categoryData, error: categoryError } = await supabase
+      .from('category')
+      .select('*')
+      .or(`slug.ilike.${slug}, category_name.ilike.${slug.replace(/-/g, ' ')}`);
+
+    if (categoryError) {
+      console.error('Error fetching category details:', categoryError);
+      return <div>Error fetching category details.</div>;
+    }
+
+    if (!categoryData || !categoryData.length) {
+      return <div>No category found.</div>;
+    }
+
+    categoryDetails = categoryData[0];
+
+    // Fetch the emoji for the category from the category_emoji table
+    try {
+      const { data: emojiData, error: emojiError } = await supabase
+        .from('category_emoji')
+        .select('emoji')
+        .eq('category_id', categoryDetails.id)
+        .single(); // Assuming there is one emoji per category
+
+      if (emojiError) {
+        console.error('Error fetching emoji:', emojiError.message, emojiError.code);
+      } else {
+        categoryEmoji = emojiData?.emoji || ''; // Set emoji or fallback to empty string
       }
+    } catch (emojiError) {
+      console.error('Unexpected error fetching emoji:', emojiError);
+    }
 
-      try {
-        console.log("Attempting to fetch category with slug:", slug);
-        const { data, error } = await supabase
-          .from('category')
-          .select('*')
-          .or(`slug.ilike.%${slug.replace(/ /g, '%')}%,category_name.ilike.%${slug.replace(/ /g, '%')}%`)
-          .maybeSingle();
-        
-        console.log("Query result:", { data, error });
+    // Fetch posts related to the category
+    try {
+      const { data: postData, error: postError } = await supabase
+        .from('posts')
+        .select('*')
+        .ilike('post_category', `%${categoryDetails.category_name}%`);
 
-        if (error) throw error;
-        if (!data) throw new Error(`Category not found: ${slug}`);
-
-        console.log("Fetched category data:", data);
-        setCategoryDetails(data);
-      } catch (error) {
-        console.error('Error fetching category details:', error);
-        setError(error.message || "Failed to fetch category details");
-      } finally {
-        setLoading(false);
+      if (postError) {
+        console.error('Error fetching posts:', postError.message, postError.code);
+      } else {
+        posts = postData || [];
       }
-    };
+    } catch (postError) {
+      console.error('Unexpected error fetching posts:', postError);
+    }
 
-    fetchCategoryDetails();
-  }, [params.slug]);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (!categoryDetails) return <p>No category found.</p>;
+  } catch (error) {
+    console.error('Unexpected error fetching category or posts:', error);
+    return <div>Error fetching data. Please try again later.</div>;
+  }
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <Header/>
+    <>
+      <Header />
       <PageHero
-        title={categoryDetails.category_name}
+        title={`${categoryEmoji ? categoryEmoji + ' ' : ''}${categoryDetails.category_name}`}
         description={`Explore the ${categoryDetails.category_name} category and find related content.`}
-        searchPlaceholder="Search within category..."
-        backgroundColor="bg-blue-100" // You can adjust this color as needed
       />
-     
-   <br />
-   <br />
-   <br />
 
-    </Suspense>
+      <div>
+        {posts.length ? (
+          posts.map((post) => <Post key={post.id} post={post} />)
+        ) : (
+          <p>No posts found</p>
+        )}
+      </div>
+    </>
   );
-};
-
-export default CategoryPage;
+}
